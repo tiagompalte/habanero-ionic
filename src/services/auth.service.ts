@@ -20,6 +20,13 @@ export class AuthService {
                           });
   }
 
+  refreshToken() {
+    return this.http.post(`${API_CONFIG.baseUrl}/auth/refresh_token`, {}, {
+                            observe: 'response',
+                            responseType: 'text'
+                          });
+  }
+
   successfulLogin(authorizationValue : string) {
     let token = authorizationValue.substring("Bearer ".length);
     let user : LocalUser = {
