@@ -1,5 +1,5 @@
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HTTP_INTERCEPTORS } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { Observable } from "rxjs/Rx";
 import { Injectable } from "@angular/core";
 
 @Injectable()
@@ -15,10 +15,6 @@ export class ErrorInterceptor implements HttpInterceptor {
       if (!errorObj.status) {
         errorObj = JSON.parse(errorObj);
       }
-
-      console.log("Erro detectado pelo interceptor:");
-      console.log(errorObj);
-
       return Observable.throw(error);
     }) as any;
   }
