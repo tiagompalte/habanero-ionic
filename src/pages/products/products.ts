@@ -11,7 +11,8 @@ import { API_CONFIG } from '../../config/api.config';
 })
 export class ProductsPage {
 
-  items : ProductDTO[];
+  items : ProductDTO[] = [];
+  page : number = 0;
 
   constructor(
     public navCtrl: NavController,
@@ -27,19 +28,19 @@ export class ProductsPage {
   loadData() {
     const categoryId = this.navParams.get('categoryId');
     const loader = this.presentLoading();
-    this.productService.findByCategory(categoryId)
+    this.productService.findByCategory(categoryId, this.page, 10)
           .subscribe(response => {
-            this.items = response['content'];
+            this.items = this.items.concat(response['content']);
             loader.dismiss();
-            this.loadImageUrls();
+            this.loadImageUrls(response['content']);
           },
           error => {
             loader.dismiss();
           });
   }
 
-  loadImageUrls() {
-    for (const item of this.items) {
+  loadImageUrls(items) {
+    for (const item of items) {
       this.productService.getSmallImageFromBucket(item.id)
             .subscribe(response => {
               item.imageUrl = `${API_CONFIG.bucketBaseUrl}/prod${item.id}-small.jpg`;
@@ -61,9 +62,19 @@ export class ProductsPage {
   }
 
   doRefresh(refresher) {
+    this.page = 0;
+    this.items = [];
     this.loadData();
     setTimeout(() => {
       refresher.complete();
+    }, 1000);
+  }
+
+  doInfinite(infiniteScroll){
+    this.page++;
+    this.loadData();
+    setTimeout(() => {
+      infiniteScroll.complete();
     }, 1000);
   }
 
